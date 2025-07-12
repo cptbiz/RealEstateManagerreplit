@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Building, Calendar, CheckCircle, TrendingUp, TrendingDown } from "lucide-react";
+import { Users, Building, Calendar, CheckCircle, TrendingUp, TrendingDown, BarChart3 } from "lucide-react";
 import StatsCard from "@/components/dashboard/stats-card";
 import RecentActivity from "@/components/dashboard/recent-activity";
 import RecentLeads from "@/components/dashboard/recent-leads";
