@@ -313,20 +313,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUpcomingAppointments(userId?: string): Promise<Appointment[]> {
-    const query = db
-      .select()
-      .from(appointments)
-      .where(and(
-        eq(appointments.status, "scheduled"),
-        sql`${appointments.startTime} > NOW()`
-      ))
-      .orderBy(appointments.startTime);
+    let whereConditions = and(
+      eq(appointments.status, "scheduled"),
+      sql`${appointments.startTime} > NOW()`
+    );
     
     if (userId) {
-      return await query.where(eq(appointments.assignedTo, userId));
+      whereConditions = and(
+        whereConditions,
+        eq(appointments.assignedTo, userId)
+      );
     }
     
-    return await query;
+    return await db
+      .select()
+      .from(appointments)
+      .where(whereConditions)
+      .orderBy(appointments.startTime);
   }
 
   // Task operations
