@@ -15,7 +15,7 @@ COPY . .
 
 # Build the application
 RUN npm run build
-RUN chmod +x build-production.sh && ./build-production.sh
+RUN npx esbuild server/index.production.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/index.production.js
 
 # Remove devDependencies after build
 RUN npm prune --production
