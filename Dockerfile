@@ -15,6 +15,7 @@ COPY . .
 
 # Build the application
 RUN npm run build
+RUN chmod +x build-production.sh && ./build-production.sh
 
 # Remove devDependencies after build
 RUN npm prune --production
@@ -26,4 +27,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Start the application
-CMD ["npm", "start"]
+CMD ["node", "dist/index.production.js"]

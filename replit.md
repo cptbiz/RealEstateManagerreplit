@@ -139,6 +139,8 @@ The application is designed to be deployed on Replit but can be adapted for othe
 - `Dockerfile`: Docker containerization
 - `start.sh`: Production startup script
 - `railway-deploy.md`: Complete deployment guide
+- `server/index.production.ts`: Production server without vite dependencies
+- `build-production.sh`: Production build script
 
 ### Key Features for Railway
 - All environment variables embedded in code
@@ -146,10 +148,18 @@ The application is designed to be deployed on Replit but can be adapted for othe
 - Automatic database migration on startup
 - Production-ready error handling
 - CORS configuration for custom domains
+- Separate production server build (no vite dependencies)
+- Optimized for Railway deployment
 
 ### Deployment Process
 1. Configure database URL in `config/railway.js`
 2. Update domain settings for authentication
 3. Deploy via GitHub or Railway CLI
-4. Automatic build and deployment
+4. Automatic build with production server
 5. Ready for production use
+
+### Recent Fixes (July 12, 2025)
+- Fixed Railway build errors (vite not found)
+- Created production server without vite dependencies
+- Optimized build process for Railway deployment
+- All deployment issues resolved

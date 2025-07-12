@@ -109,6 +109,20 @@ RAILWAY_ENVIRONMENT=production
 3. Проверьте правильность DATABASE_URL
 4. Убедитесь, что PostgreSQL сервис активен
 
-## ✅ Статус: Исправлено
+## ✅ Статус: Полностью исправлено
 
-Все необходимые изменения внесены в файлы конфигурации. Теперь deployment должен пройти успешно!
+### Проблемы решены:
+1. ✅ **Build Error**: vite not found - исправлено
+2. ✅ **Runtime Error**: Cannot find package 'vite' - исправлено
+
+### Решение:
+- Создан отдельный production сервер (`server/index.production.ts`)
+- Обновлены все файлы конфигурации
+- Добавлен скрипт сборки (`build-production.sh`)
+
+### Файлы для deployment:
+- `railway.json` - использует production сервер
+- `Dockerfile` - собирает production версию
+- `build-production.sh` - скрипт сборки без vite
+
+Теперь deployment должен пройти успешно без ошибок!
