@@ -32,6 +32,7 @@ export interface IStorage {
   // User operations - mandatory for Replit Auth
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  updateUserType(id: string, data: { userType: string; companyName?: string; companyLicense?: string }): Promise<User>;
 
   // Lead operations
   createLead(lead: InsertLead): Promise<Lead>;
@@ -112,6 +113,20 @@ export class DatabaseStorage implements IStorage {
           updatedAt: new Date(),
         },
       })
+      .returning();
+    return user;
+  }
+
+  async updateUserType(id: string, data: { userType: string; companyName?: string; companyLicense?: string }): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        userType: data.userType,
+        companyName: data.companyName,
+        companyLicense: data.companyLicense,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
       .returning();
     return user;
   }

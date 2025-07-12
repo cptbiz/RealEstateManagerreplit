@@ -15,10 +15,11 @@ import Tasks from "@/pages/tasks";
 import Documents from "@/pages/documents";
 import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
+import UserTypeSelection from "@/pages/user-type-selection";
 import Layout from "@/components/layout/layout";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
     return (
@@ -35,6 +36,8 @@ function Router() {
     <Switch>
       {!isAuthenticated ? (
         <Route path="/" component={Landing} />
+      ) : user && !(user as any).userType ? (
+        <Route path="/" component={UserTypeSelection} />
       ) : (
         <Layout>
           <Route path="/" component={Dashboard} />

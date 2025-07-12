@@ -33,6 +33,9 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  userType: varchar("user_type").notNull().default("individual"), // developer, agency, individual
+  companyName: varchar("company_name"),
+  companyLicense: varchar("company_license"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -308,6 +311,10 @@ export const insertActivitySchema = createInsertSchema(activities).omit({
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+
+// User type validation
+export const userTypeSchema = z.enum(["developer", "agency", "individual"]);
+export type UserType = z.infer<typeof userTypeSchema>;
 
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Lead = typeof leads.$inferSelect;

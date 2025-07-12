@@ -21,6 +21,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user type
+  app.post('/api/auth/user/type', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { userType, companyName, companyLicense } = req.body;
+      
+      const user = await storage.updateUserType(userId, {
+        userType,
+        companyName,
+        companyLicense
+      });
+      
+      res.json(user);
+    } catch (error) {
+      console.error("Error updating user type:", error);
+      res.status(500).json({ message: "Failed to update user type" });
+    }
+  });
+
   // Dashboard routes
   app.get('/api/dashboard/stats', isAuthenticated, async (req: any, res) => {
     try {

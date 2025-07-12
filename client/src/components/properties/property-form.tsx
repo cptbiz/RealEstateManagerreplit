@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { insertPropertySchema, type Property, type InsertProperty } from "@shared/schema";
+import { Upload, X, Eye } from "lucide-react";
+import { useState } from "react";
 
 interface PropertyFormProps {
   property?: Property | null;
@@ -20,6 +22,8 @@ interface PropertyFormProps {
 export default function PropertyForm({ property, onSuccess, onCancel }: PropertyFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>(property?.imageUrls || []);
 
   const form = useForm<InsertProperty>({
     resolver: zodResolver(insertPropertySchema),
@@ -42,12 +46,48 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
     },
   });
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (validFiles.length !== files.length) {
+      toast({
+        title: "Предупреждение",
+        description: "Некоторые файлы не являются изображениями",
+        variant: "destructive",
+      });
+    }
+    
+    setSelectedImages(prev => [...prev, ...validFiles]);
+    
+    // Создание URL для предпросмотра
+    const newUrls = validFiles.map(file => URL.createObjectURL(file));
+    setImageUrls(prev => [...prev, ...newUrls]);
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setImageUrls(prev => {
+      const newUrls = [...prev];
+      if (newUrls[index] && newUrls[index].startsWith('blob:')) {
+        URL.revokeObjectURL(newUrls[index]);
+      }
+      return newUrls.filter((_, i) => i !== index);
+    });
+  };
+
   const mutation = useMutation({
     mutationFn: async (data: InsertProperty) => {
+      // Добавляем URLs изображений к данным
+      const propertyData = {
+        ...data,
+        imageUrls: imageUrls.filter(url => !url.startsWith('blob:'))
+      };
+      
       if (property) {
-        return apiRequest("PUT", `/api/properties/${property.id}`, data);
+        return apiRequest("/api/properties/" + property.id, "PUT", propertyData);
       } else {
-        return apiRequest("POST", "/api/properties", data);
+        return apiRequest("/api/properties", "POST", propertyData);
       }
     },
     onSuccess: () => {
@@ -251,6 +291,71 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
           {...form.register("lotSize")}
           placeholder="Lot size in acres"
         />
+      </div>
+
+      {/* Image Upload Section */}
+      <div className="space-y-4">
+        <Label>Изображения недвижимости</Label>
+        
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <Upload className="mx-auto h-12 w-12 text-gray-400" />
+          <div className="mt-4">
+            <Label htmlFor="images" className="cursor-pointer">
+              <span className="mt-2 block text-sm font-medium text-gray-900">
+                Загрузить изображения
+              </span>
+              <span className="mt-1 block text-sm text-gray-500">
+                PNG, JPG, GIF до 10MB каждое
+              </span>
+            </Label>
+            <Input
+              id="images"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </div>
+        </div>
+
+        {/* Image Preview */}
+        {imageUrls.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {imageUrls.map((url, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={url}
+                  alt={`Property image ${index + 1}`}
+                  className="w-full h-24 object-cover rounded-lg border"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity rounded-lg flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 flex space-x-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        const newWindow = window.open(url, '_blank');
+                        if (newWindow) newWindow.focus();
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeImage(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end space-x-2">
