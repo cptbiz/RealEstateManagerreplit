@@ -36,7 +36,11 @@ railway login
 # Создайте проект
 railway init
 
-# Разверните
+# Очистите кэш и разверните
+railway up --detach
+
+# Или используйте оптимизированную конфигурацию
+mv railway-optimized.json railway.json
 railway up
 ```
 
