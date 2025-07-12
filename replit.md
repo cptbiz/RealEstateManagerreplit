@@ -86,6 +86,12 @@ The application uses the following main entities:
 - **Session Secret**: Required for session encryption
 - **Replit Domains**: Required for OAuth configuration
 
+### Railway Deployment
+- **Railway Platform**: Cloud deployment platform
+- **Embedded Configuration**: All environment variables embedded in code
+- **PostgreSQL Service**: Railway-hosted database
+- **Docker Support**: Containerized deployment
+
 ### Frontend Libraries
 - **Radix UI**: Headless UI components
 - **Tailwind CSS**: Utility-first CSS framework
@@ -123,3 +129,27 @@ The application uses the following main entities:
 - `ISSUER_URL`: OpenID Connect issuer (optional, defaults to Replit)
 
 The application is designed to be deployed on Replit but can be adapted for other hosting platforms with minimal configuration changes.
+
+## Railway Deployment Ready
+
+### Configuration Files
+- `config/railway.js`: Embedded environment variables
+- `railway.json`: Railway platform configuration
+- `nixpacks.toml`: Build configuration
+- `Dockerfile`: Docker containerization
+- `start.sh`: Production startup script
+- `railway-deploy.md`: Complete deployment guide
+
+### Key Features for Railway
+- All environment variables embedded in code
+- No external configuration required
+- Automatic database migration on startup
+- Production-ready error handling
+- CORS configuration for custom domains
+
+### Deployment Process
+1. Configure database URL in `config/railway.js`
+2. Update domain settings for authentication
+3. Deploy via GitHub or Railway CLI
+4. Automatic build and deployment
+5. Ready for production use
